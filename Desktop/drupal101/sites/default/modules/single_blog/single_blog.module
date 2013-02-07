@@ -1,0 +1,126 @@
+<?php
+
+
+define('SINGLE_BLOG_NODE_TYPE', 'article');
+define('SINGLE_BLOG_LIST_COUNT', 4);
+
+
+function single_blog_list($number) {
+$query = db_select('node', 'n')
+->fields('n', array('nid', 'title', 'created', 'uid'))
+->condition('type', SINGLE_BLOG_NODE_TYPE)
+->condition('status', 1)
+->orderBy('created', 'DESC')
+->range(0, $number)
+->addTag('node_access')
+->execute();
+return $query;
+}
+
+
+function single_blog_block_info() {
+$blocks = array();
+$blocks['recent'] = array(
+'info' => t('Dimi'),
+);
+return $blocks;
+}
+	
+
+function single_blog_block_view($delta = '') {
+// Create an empty block.
+$block = array(
+'subject' => '',
+'content' => '',
+);
+
+if ($delta == 'recent') {
+$block['subject'] = t('Recommendation');
+if (user_access('access content')) {
+$result = single_blog_list(SINGLE_BLOG_LIST_COUNT);
+$items = array();
+foreach ($result as $node) {
+$items[] = array(
+'data' => array(
+'#type' => 'link',
+'#title' => $node->title,
+'page callback' => 'forward',
+'access callback' => TRUE,
+'#href' => 'node/' . $node->nid,
+),
+'class' => array('node-' . $node->nid),
+);
+}
+if (!empty($items)) {
+$block['content']['list'] = array(
+'#theme' => 'item_list__single_blog',
+'#items' => $items,
+'#pre_render' =>
+array('single_blog_item_list_child_render'),
+);
+
+$block['content']['more'] = array(
+'#theme' => 'more_link',
+'#url' => 'blog',
+'#title' => t('Read the latest blog entries.'),
+);
+
+$block['content']['#attached']['css'][] =
+drupal_get_path('module', 'single_blog') . '/single-blog.css';
+}
+}
+}
+return $block;
+}
+
+function forward() {
+ $query= db_insert('user_art')
+   ->fields(array(
+    'uid' => '$uid',
+	'nid' => '$nid',
+	'title' => '$title',
+	))
+	->execute();
+
+	drupal_goto('node/'.$node->nid);
+}
+
+
+function single_blog_item_list_child_render($elements) {
+foreach (array_keys($elements['#items']) AS $key) {
+if (is_array($elements['#items'][$key]['data'])) {
+$elements['#items'][$key]['data'] =
+drupal_render($elements['#items'][$key]['data']);
+}
+}
+return $elements;
+}
+
+
+function single_blog_theme($existing, $type, $theme, $path) {
+return array(
+'single_blog_block_item' => array(
+'variables' => array(
+'node' => NULL,
+),
+'template' => 'single-blog-block-item',
+),
+);
+}
+
+function template_preprocess_single_blog_block_item(&$variables) {
+$node = $variables['node'];
+$variables['title'] = array(
+'#type' => 'link',
+'#title' => $node->title,
+'#href' => 'node/' . $node->nid,
+);
+$variables['created'] = $node->created;
+$variables['date'] = format_date($node->created, 'custom',
+SINGLE_BLOG_DATE_FORMAT);
+
+
+$variables['user'] = user_load($node->uid);
+$variables['name'] = theme('username', array(
+'account' => $variables['user']));
+}

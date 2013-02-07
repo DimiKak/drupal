@@ -1,0 +1,32 @@
+<?php
+// $Id$
+
+
+/**
+* Implements hook_block_info().
+*/
+function first_block_info() {
+$blocks = array();
+$blocks['list_modules'] = array(
+'info' => t('A listing of all of the enabled modules.'),
+'cache' => DRUPAL_NO_CACHE,
+);
+return $blocks;
+}
+
+/**
+* Implementation of hook_menu().
+*/
+function first_menu() {
+$items['hello'] = array(
+'title' => 'Hello world',
+'page callback' => 'first_page',
+'access callback' => TRUE,
+);
+return $items;
+}
+
+
+function first_page() {
+	drupal_goto('https://my.ceid.upatras.gr/');
+}
