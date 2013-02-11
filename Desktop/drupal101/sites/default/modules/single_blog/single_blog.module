@@ -46,9 +46,9 @@ $items[] = array(
 '#title' => $node->title,
 'page callback' => 'forward',
 'access callback' => TRUE,
-'#href' => 'node/' . $node->nid,
+'#href' => 'node/' . $node->nid. '? ref=1',
 ),
-'class' => array('node-' . $node->nid),
+'class' => array('node-' . $node->nid .'? ref=1'),
 );
 }
 if (!empty($items)) {
