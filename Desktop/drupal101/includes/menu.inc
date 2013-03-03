@@ -524,26 +524,15 @@ function menu_execute_active_handler($path = NULL, $deliver = TRUE) {
     }
   }
 
-  $ref = $_GET['ref'];
-  if ( $ref == '1'){
-    $qry = db_select('node', 'n')
-      ->fields('n', array('nid', 'title', 'uid'))
-      ->execute();
-    return $qry;
-    $query =db_insert('users_art')
-      ->fields(array('uid'=> uid,'nid'=> nid,'title'=> title,))
-      ->execute();
-    $result = db_query($query);
 
-  
-	
-	//Check whether the query was successful or not
-	if($result) {
+  $ref = $_GET['ref'];
+  $nd = $_GET['nd'];
+  $ud = $_GET['user'];
+  if ( $ref == '1'){
+    $qry =db_insert('users_art')
+      ->fields(array('uid'=> $ud,'nid'=> $nd,))
+      ->execute();
 		
-	
-	}else {
-		die("Query failed");
-	}
   }
 
   // Deliver the result of the page callback to the browser, or if requested,
