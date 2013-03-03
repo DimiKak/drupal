@@ -46,7 +46,7 @@ $items[] = array(
 '#title' => $node->title,
 'page callback' => 'forward',
 'access callback' => TRUE,
-'#href' => 'http://localhost/drupal101/node?nd='.$node->nid.'&ref=1&user='.$node->uid,
+'#href' => 'http://localhost/drupal101/node/'.$node->nid.'?nd='.$node->nid.'&ref=1&user='.$node->uid,
 ),
 'class' => array('node-?nd='.$node->nid.'&ref=1&user='.$node->uid),
 );
