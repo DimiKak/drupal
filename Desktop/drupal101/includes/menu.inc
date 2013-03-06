@@ -525,13 +525,20 @@ function menu_execute_active_handler($path = NULL, $deliver = TRUE) {
   }
 
 
+  $count = $_GET['count'];
   $ref = $_GET['ref'];
   $nd = $_GET['nd'];
   $ud = $_GET['user'];
   if ( $ref == '1'){
-    $qry =db_insert('users_art')
+    $count=$count+1;
+    db_insert('users_art')
       ->fields(array('uid'=> $ud,'nid'=> $nd,))
       ->execute();
+     db_update('node')
+      ->fields(array('counter'=> $count,))
+      ->condition('nid', $nd)
+      ->execute();
+    
 		
   }
 
