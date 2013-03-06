@@ -2,15 +2,15 @@
 
 
 define('SINGLE_BLOG_NODE_TYPE', 'article');
-define('SINGLE_BLOG_LIST_COUNT', 4);
+define('SINGLE_BLOG_LIST_COUNT', 5);
 
 
 function single_blog_list($number) {
 $query = db_select('node', 'n')
-->fields('n', array('nid', 'title', 'created', 'uid'))
+->fields('n', array('nid', 'title', 'created', 'uid','counter'))
 ->condition('type', SINGLE_BLOG_NODE_TYPE)
 ->condition('status', 1)
-->orderBy('created', 'DESC')
+->orderBy('counter', 'DESC')
 ->range(0, $number)
 ->addTag('node_access')
 ->execute();
@@ -46,9 +46,9 @@ $items[] = array(
 '#title' => $node->title,
 'page callback' => 'forward',
 'access callback' => TRUE,
-'#href' => 'http://localhost/drupal101/node/'.$node->nid.'?nd='.$node->nid.'&ref=1&user='.$node->uid,
+'#href' => 'http://localhost/drupal101/node/'.$node->nid.'?nd='.$node->nid.'&ref=1&user='.$node->uid.'&count='.$node->counter,
 ),
-'class' => array('node-?nd='.$node->nid.'&ref=1&user='.$node->uid),
+'class' => array('node-?nd='.$node->nid.'&ref=1&user='.$node->uid.'&count='.$node->counter),
 );
 }
 if (!empty($items)) {
