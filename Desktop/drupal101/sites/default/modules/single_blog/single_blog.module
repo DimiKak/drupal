@@ -50,7 +50,7 @@ $items[] = array(
 'access callback' => TRUE,
 '#href' => 'http://localhost/drupal101/node/'.$node->nid.'?nd='.$node->nid.'&ref=1&user='.$user->uid.'&count='.$node->counter,
 ),
-'class' => array('node-?nd='.$node->nid.'&ref=1&user='.$node->uid.'&count='.$node->counter),
+'class' => array('node-?nd='.$node->nid.'&ref=1&user='.$user->uid.'&count='.$node->counter),
 );
 }
 if (!empty($items)) {
