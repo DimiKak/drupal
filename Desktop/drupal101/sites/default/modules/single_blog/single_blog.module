@@ -37,6 +37,8 @@ $block = array(
 if ($delta == 'recent') {
 $block['subject'] = t('Recommendation');
 if (user_access('access content')) {
+global $user;
+$owner = user_load($user->uid);
 $result = single_blog_list(SINGLE_BLOG_LIST_COUNT);
 $items = array();
 foreach ($result as $node) {
@@ -46,7 +48,7 @@ $items[] = array(
 '#title' => $node->title,
 'page callback' => 'forward',
 'access callback' => TRUE,
-'#href' => 'http://localhost/drupal101/node/'.$node->nid.'?nd='.$node->nid.'&ref=1&user='.$node->uid.'&count='.$node->counter,
+'#href' => 'http://localhost/drupal101/node/'.$node->nid.'?nd='.$node->nid.'&ref=1&user='.$user->uid.'&count='.$node->counter,
 ),
 'class' => array('node-?nd='.$node->nid.'&ref=1&user='.$node->uid.'&count='.$node->counter),
 );
