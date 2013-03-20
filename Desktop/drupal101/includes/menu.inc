@@ -539,7 +539,8 @@ function menu_execute_active_handler($path = NULL, $deliver = TRUE) {
       ->condition('nid', $nd)
       ->execute();
     
-		
+    $term = 'Facebook';
+    getTfidf($term); 		
   }
 
   // Deliver the result of the page callback to the browser, or if requested,
@@ -552,6 +553,59 @@ function menu_execute_active_handler($path = NULL, $deliver = TRUE) {
     return $page_callback_result;
   }
 }
+
+
+
+function getIndex() {
+
+	$data = db_select('search_dataset','s')
+            ->fields('s', array('data'))
+            ->condition('sid',1)
+            ->execute();
+        
+        $collection = array(
+                1 => $data,
+                2 => 'this one isn\'t quite like the rest but is here',
+                3 => 'this is a different short string that\' not as short'
+        );
+
+        $dictionary = array();
+        $docCount = array();
+
+        foreach($collection as $docID => $doc) {
+                $terms = explode(' ', $doc);
+                $docCount[$docID] = count($terms);
+
+                foreach($terms as $term) {
+                        if(!isset($dictionary[$term])) {
+                                $dictionary[$term] = array('df' => 0, 'postings' => array());
+                        }
+                        if(!isset($dictionary[$term]['postings'][$docID])) {
+                                $dictionary[$term]['df']++;
+                                $dictionary[$term]['postings'][$docID] = array('tf' => 0);
+                        }
+
+                        $dictionary[$term]['postings'][$docID]['tf']++;
+                }
+        }
+
+        return array('docCount' => $docCount, 'dictionary' => $dictionary);
+
+}
+
+function getTfidf($term) {
+        $index = getIndex();
+        $docCount = count($index['docCount']);
+        $entry = $index['dictionary'][$term];
+        foreach($entry['postings'] as  $docID => $postings) {
+                echo "Document $docID and term $term give TFIDF: " .
+                        ($postings['tf'] * log($docCount / $entry['df'], 2));
+                echo "\n";
+        }
+}
+
+
+
 
 /**
  * Loads objects into the map as defined in the $item['load_functions'].
