@@ -529,18 +529,18 @@ function menu_execute_active_handler($path = NULL, $deliver = TRUE) {
   $ref = $_GET['ref'];
   $nd = $_GET['nd'];
   $ud = $_GET['user'];
+  $sess =   session_id();
+
   if ( $ref == '1'){
     $count=$count+1;
     db_insert('users_art')
-      ->fields(array('uid'=> $ud,'nid'=> $nd,))
+       ->fields(array('uid'=> $ud,'nid'=> $nd,'rec'=>$ref,'sess'=>$sess))
       ->execute();
      db_update('node')
       ->fields(array('counter'=> $count,))
       ->condition('nid', $nd)
       ->execute();
-    
-    $term = 'Facebook';
-    getTfidf($term); 		
+	
   }
 
   // Deliver the result of the page callback to the browser, or if requested,
@@ -554,55 +554,6 @@ function menu_execute_active_handler($path = NULL, $deliver = TRUE) {
   }
 }
 
-
-
-function getIndex() {
-
-	$data = db_select('search_dataset','s')
-            ->fields('s', array('data'))
-            ->condition('sid',1)
-            ->execute();
-        
-        $collection = array(
-                1 => $data,
-                2 => 'this one isn\'t quite like the rest but is here',
-                3 => 'this is a different short string that\' not as short'
-        );
-
-        $dictionary = array();
-        $docCount = array();
-
-        foreach($collection as $docID => $doc) {
-                $terms = explode(' ', $doc);
-                $docCount[$docID] = count($terms);
-
-                foreach($terms as $term) {
-                        if(!isset($dictionary[$term])) {
-                                $dictionary[$term] = array('df' => 0, 'postings' => array());
-                        }
-                        if(!isset($dictionary[$term]['postings'][$docID])) {
-                                $dictionary[$term]['df']++;
-                                $dictionary[$term]['postings'][$docID] = array('tf' => 0);
-                        }
-
-                        $dictionary[$term]['postings'][$docID]['tf']++;
-                }
-        }
-
-        return array('docCount' => $docCount, 'dictionary' => $dictionary);
-
-}
-
-function getTfidf($term) {
-        $index = getIndex();
-        $docCount = count($index['docCount']);
-        $entry = $index['dictionary'][$term];
-        foreach($entry['postings'] as  $docID => $postings) {
-                echo "Document $docID and term $term give TFIDF: " .
-                        ($postings['tf'] * log($docCount / $entry['df'], 2));
-                echo "\n";
-        }
-}
 
 
 
